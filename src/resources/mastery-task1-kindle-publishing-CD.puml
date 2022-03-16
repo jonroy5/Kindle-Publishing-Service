@@ -1,1 +1,92 @@
-PARTICIPANTS: use this file for creating the class diagram in mastery task 01
+@startuml
+class GetBookActivity{
+-recommendationsServiceClient : RecommendationServiceClient
+-catalogDao : CatalogDao
++execute(GetBookRequest request) : GetBookResponse
+}
+class GetPublishingActivity{
++execute(GetPublishingStatusRequest publishingStatusRequest) : GetPublishingStatusResponse
+}
+class RemoveBookFromCatalogActivity{
++execute(RemoveBookFromCatalogRequest removeBookFromCatalogRequest) : RemoveBookFromCatalogResponse
+}
+class SubmitBookForPublishingActivity {
+-publishingStatusDao : PublishingStatusDao
++execute(SubmitBookForPublishingRequest request) : SubmitBookForPublishingResponse
+}
+class RecommendationsServiceClient {
+-recommendationsService : RecommendationsService
++getBookRecommendations(BookGenre genre) : List<BookRecommendation>
+}
+class Controller{
+-component : ApplicationComponent
++getBook(@PathVariable String id) : ResponseEntity<?>
++removeBook(@PathVariable String id) : ResponseEntity<?>
+submitBookForPublishing(@Valid @RequestBody Book book) : ResponseEntity<?>
+}
+class BookPublishRequestConverter {
++toBookPublishRequest(SubmitBookForPublishingRequest request) : BookPublishRequest
+}
+class CatalogItemConverter {
++toBook(CatalogItemVersion catalogItem) : Book
+}
+class RecommendationsCoralConverter {
++toCoral(List<com.amazon.ata.recommendationsservice.types.BookRecommendation>
+                                                        bookRecommendations) : List<BookRecommendation>
+}
+class CatalogDao{
+-dynamoDbMapper : DynamoDBMapper
++getBookFromCatalog(String bookId) : CatalogItemVersion
++getLatestVersionOfBook(String bookId) : CatalogItemVersion
+}
+
+class PublishingStatusDao {
+-String ADDITIONAL_NOTES_PREFIX
+-dynamoDbMapper : DynamoDBMapper
++setPublishingStatus(String publishingRecordId,
+                                                    PublishingRecordStatus publishingRecordStatus,
+                                                    String bookId) : PublishingStatusItem
+
+
+}
+
+class CatalogItemVersion {
+-@DynamoDBHashKey bookId : String
+-@DynamoDBRangeKey version : int
+-@DynamoDBAttributeKey inactive : boolean
+-@DynamoDBAttributeKey author : String
+-@DynamoDBAttributeKey text : String
+-@DynamoDBAttributeKey genre : BookGenre
+}
+class PublishingStatusItem {
+-@DynamoDBRangeKey publishingRecordId : String
+-@DynamoDBHashKey publishingRecordId : String
+-@DynamoDBRangeKey status : PublishingRecordStatus
+-@DynamoDBAttributeKey statusMessage : String
+-@DynamoDBAttributeKey text : String
+-@DynamoDBAttributeKey bookId : String
+}
+class KindleFormatConverter {
+-format(BookPublishRequest publishRequest) : KindleFormattedBook
+}
+class BookNotFoundException extends RuntimeException {
+-long serialVersionUID
+}
+class PublishingStatusNotFoundException extends RuntimeException {
+-long serialVersionUID
+}
+
+CatalogItemVersion --o CatalogDao
+PublishingStatusItem --o PublishingStatusDao
+CatalogDao --o BookNotFoundException
+GetBookActivity --> CatalogDao
+GetBookActivity --> RecommendationsServiceClient
+SubmitBookForPublishingActivity --> PublishingStatusDao
+
+@enduml
+
+
+
+
+@enduml
+
