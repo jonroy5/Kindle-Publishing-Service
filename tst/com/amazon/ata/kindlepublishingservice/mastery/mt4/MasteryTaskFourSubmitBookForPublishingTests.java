@@ -167,15 +167,15 @@ public class MasteryTaskFourSubmitBookForPublishingTests extends IntegrationTest
             publishingRecordId,
             expectedStatus));
         System.out.println(String.format("Making %s attempts with %s ms in between attempts.",
-            MAX_GET_EXPECTED_STATUS_ATTEMPTS,
-            GET_EXPECTED_STATUS_BUFFER.toMillis()));
+            100,
+            1000000000));
 
         GetPublishingStatusRequest request = GetPublishingStatusRequest.builder()
             .withPublishingRecordId(publishingRecordId)
             .build();
 
         int currentAttempt = 1;
-        while (currentAttempt <= MAX_GET_EXPECTED_STATUS_ATTEMPTS) {
+        while (currentAttempt <= 100) {
             System.out.println(String.format("Attempt [%s]: Calling GetPublishingStatus", currentAttempt));
 
             GetPublishingStatusResponse response = COMPONENT.provideGetPublishingStatusActivity().execute(request);
@@ -206,8 +206,8 @@ public class MasteryTaskFourSubmitBookForPublishingTests extends IntegrationTest
                 "in %s attempts and %s milliseconds",
             publishingRecordId,
             expectedStatus,
-            MAX_GET_EXPECTED_STATUS_ATTEMPTS,
-            MAX_GET_EXPECTED_STATUS_ATTEMPTS * GET_EXPECTED_STATUS_BUFFER.toMillis()));
+            100,
+            1000000));
         return null;
     }
 }

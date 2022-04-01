@@ -2,9 +2,12 @@ package com.amazon.ata.kindlepublishingservice.publishing;
 
 import com.amazon.ata.recommendationsservice.types.BookGenre;
 
+import javax.inject.Inject;
+
 /**
  * Class representing a book publish request object.
  */
+
 public final class BookPublishRequest {
 
     private final String publishingRecordId;
