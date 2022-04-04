@@ -28,6 +28,7 @@ public class SubmitBookForPublishingActivity {
 
     private PublishingStatusDao publishingStatusDao;
     private CatalogDao catalogDao;
+    private BookPublishRequestManager requestManager;
 
 
     /**
@@ -36,9 +37,10 @@ public class SubmitBookForPublishingActivity {
      * @param publishingStatusDao PublishingStatusDao to access the publishing status table.
      */
     @Inject
-    public SubmitBookForPublishingActivity(PublishingStatusDao publishingStatusDao, CatalogDao catalogDao) {
+    public SubmitBookForPublishingActivity(PublishingStatusDao publishingStatusDao, CatalogDao catalogDao, BookPublishRequestManager requestManager) {
         this.publishingStatusDao = publishingStatusDao;
         this.catalogDao = catalogDao;
+        this.requestManager = requestManager;
     }
 
     /**
@@ -51,15 +53,17 @@ public class SubmitBookForPublishingActivity {
      * to check the publishing state of the book.
      */
     public SubmitBookForPublishingResponse execute(SubmitBookForPublishingRequest request) {
-        final BookPublishRequest bookPublishRequest = BookPublishRequestConverter.toBookPublishRequest(request);
+
 
         // TODO: If there is a book ID in the request, validate it exists in our catalog
         // TODO: Submit the BookPublishRequest for processing
-        if(bookPublishRequest.getBookId() != null) {
-            catalogDao.validateBookExists(bookPublishRequest.getBookId());
+        if(request.getBookId() != null) {
+            catalogDao.validateBookExists(request.getBookId());
         }
-        BookPublishRequestManager manager = new BookPublishRequestManager();
-        manager.addBookPublishRequest(bookPublishRequest);
+        final BookPublishRequest bookPublishRequest = BookPublishRequestConverter.toBookPublishRequest(request);
+
+        requestManager.addBookPublishRequest(bookPublishRequest);
+
 
         PublishingStatusItem item =  publishingStatusDao.setPublishingStatus(bookPublishRequest.getPublishingRecordId(),
                 PublishingRecordStatus.QUEUED,
